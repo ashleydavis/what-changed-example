@@ -27,9 +27,8 @@ fi
 for TARGET_NAME in "${TARGETS[@]}"; do
     echo "==> $TARGET_NAME"
     case "$TARGET_NAME" in
-        compile) npm run --silent compile ;;
-        test)    npm test --silent ;;
-        e2e)     npm run --silent e2e ;;
+        test)    npm test ;;
+        e2e)     npm run e2e ;;
         *)
             echo "This script does not know how to run \"$TARGET_NAME\"." >&2
             exit 1

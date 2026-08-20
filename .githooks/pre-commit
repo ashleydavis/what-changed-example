@@ -3,13 +3,14 @@
 # Refuses the commit when the work this change affects does not pass.
 #
 # A commit touching only the README runs nothing and goes straight through. A commit under src runs
-# the compile, the tests and the end to end suite. A commit under test runs only the tests.
+# both the tests and the end to end suite. A commit under test runs only the tests.
 #
 # This file has no .sh extension because git recognises hooks only by these exact filenames.
 #
-set -uo pipefail
+set -euo pipefail
 
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+# No `cd` needed: git runs a hook with the working directory already at the root of the working
+# tree, whichever directory you typed `git commit` in.
 
 echo "pre-commit: running whatever this change affects"
 
@@ -17,9 +18,9 @@ echo "pre-commit: running whatever this change affects"
 # whatever happens to be first on PATH.
 run_checks() {
     if command -v mise >/dev/null 2>&1; then
-        mise exec -- ./scripts/check-everything.sh
+        mise exec -- ./scripts/test-everything.sh
     else
-        ./scripts/check-everything.sh
+        ./scripts/test-everything.sh
     fi
 }
 

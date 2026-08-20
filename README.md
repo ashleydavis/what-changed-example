@@ -4,12 +4,11 @@ An example of using [what-changed](https://github.com/ashleydavis/what-changed) 
 
 **This repository ships with a failing test on purpose.** That is the demo: try to commit, get refused, fix one word, then watch how little each following commit has to do.
 
-Three targets, and the third one is slow on purpose:
+Two targets, and the second one is slow on purpose:
 
 | Target | Runs | Watches |
 | --- | --- | --- |
-| `compile` | `node --check src/greet.js` | `src` |
-| `test` | `node --test test/` | `src`, `test` |
+| `test` | `node --test "test/**/*.test.js"` | `src`, `test` |
 | `e2e` | a script that sleeps for five seconds | `src`, `e2e` |
 
 Five seconds stands in for the real thing: a browser to start, a server to wait for, fixtures to load. It is the cost you do not want to pay to commit a typo fix in the README.
@@ -19,7 +18,7 @@ Five seconds stands in for the real thing: a browser to start, a server to wait 
 | File | What it is |
 | --- | --- |
 | [`what-changed.yaml`](what-changed.yaml) | The targets, and which files each one watches |
-| [`scripts/check-everything.sh`](scripts/check-everything.sh) | Asks what changed and runs only that |
+| [`scripts/test-everything.sh`](scripts/test-everything.sh) | Asks what changed and runs only that |
 | [`.githooks/pre-commit`](.githooks/pre-commit) | Runs the above before every commit |
 | [`scripts/install-hooks.sh`](scripts/install-hooks.sh) | Points git at that hook, once per clone |
 | [`package.json`](package.json) | Each target's command, each capturing its own baseline on success |
@@ -39,11 +38,12 @@ mise trust && mise install    # Node, and the what-changed binary
 
 ## Try it
 
-The test is failing to start with, so the first commit is refused:
+The test is failing to start with, so the first commit you try is refused. Change something and see:
 
 ```bash
+echo "// A change." >> src/greet.js
 git add -A
-git commit -m "Fix the greeting"   # compile passes, the tests fail, refused
+git commit -m "Change the greeting"   # the tests fail, refused
 ```
 
 Fix the one word and commit again. Everything runs, everything passes, and each target records that it passed:
@@ -83,7 +83,7 @@ what-changed summary
 **Each target captures its own baseline, as the last step of its own command.** In `package.json`:
 
 ```json
-"test": "node --test --test-reporter=spec test/ && what-changed baseline capture test"
+"test": "node --test \"test/**/*.test.js\" && what-changed baseline capture test"
 ```
 
 The `&&` is what stops a failing suite from recording a pass. Capturing the baseline is a claim that this suite passed against these exact files, so it has to happen after the suite passed and nowhere else.

@@ -12,11 +12,6 @@ ignore:
   - .md
 
 targets:
-  # Compiling only cares about the source.
-  - name: compile
-    paths:
-      - src
-
   # The fast tests care about the source and about themselves.
   - name: test
     paths:

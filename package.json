@@ -4,8 +4,7 @@
     "type": "module",
     "description": "The same pre-commit hook as git-pre-commit-hook-example, but it runs only the work that the change affects.",
     "scripts": {
-        "compile": "node --check src/greet.js && what-changed baseline capture compile",
-        "test": "node --test --test-reporter=spec test/ && what-changed baseline capture test",
+        "test": "node --test --test-reporter=spec \"test/**/*.test.js\" && what-changed baseline capture test",
         "e2e": "node e2e/slow-check.js && what-changed baseline capture e2e"
     }
 }
