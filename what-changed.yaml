@@ -1,0 +1,30 @@
+# Which files decide whether each target needs to run.
+#
+# A target is one thing you would want to run on its own: a build, a test suite, a deploy. what-changed
+# reports the targets whose watched files differ from that target's last recorded pass.
+
+# Watched by every target, because a change here can affect anything.
+always:
+  - package.json
+
+# Never looked at. A change to a markdown file cannot break a test.
+ignore:
+  - .md
+
+targets:
+  # Compiling only cares about the source.
+  - name: compile
+    paths:
+      - src
+
+  # The fast tests care about the source and about themselves.
+  - name: test
+    paths:
+      - src
+      - test
+
+  # The expensive suite. Same idea, and this is the one worth skipping.
+  - name: e2e
+    paths:
+      - src
+      - e2e

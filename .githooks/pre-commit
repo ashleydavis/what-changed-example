@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Refuses the commit when the work this change affects does not pass.
+#
+# A commit touching only the README runs nothing and goes straight through. A commit under src runs
+# the compile, the tests and the end to end suite. A commit under test runs only the tests.
+#
+# This file has no .sh extension because git recognises hooks only by these exact filenames.
+#
+set -uo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+echo "pre-commit: running whatever this change affects"
+
+# Goes through mise when it is there, so the pinned Node and what-changed are used rather than
+# whatever happens to be first on PATH.
+run_checks() {
+    if command -v mise >/dev/null 2>&1; then
+        mise exec -- ./scripts/check-everything.sh
+    else
+        ./scripts/check-everything.sh
+    fi
+}
+
+if ! run_checks; then
+    echo "" >&2
+    echo "pre-commit: REFUSED. Fix the failure above and commit again." >&2
+    exit 1
+fi
+
+echo "pre-commit: passed"
